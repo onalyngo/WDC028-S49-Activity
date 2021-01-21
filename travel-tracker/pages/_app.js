@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import Head from 'next/head'
 import { Container } from 'react-bootstrap';
 import '../styles/globals.css';
 // Bootstrap css
@@ -58,6 +59,10 @@ export default function App({ Component, pageProps }) {
 
     return (
         <React.Fragment>
+            <Head>
+                <script defer src={`https://www.paypal.com/sdk/js?client-id=${process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID}&currency=PHP`}>
+                </script>
+            </Head>
             {/* Wrap the component tree within the UserProvider context provider so that components will have access to the passed in values here */}
             <UserProvider value={{user, setUser, unsetUser}}>
                 <Navbar />

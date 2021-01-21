@@ -35,7 +35,11 @@ router.post('/travels', auth.verify, (req, res) => {
                 latitude: req.body.destinationLat
             },
             distance: req.body.distance,
-            duration: req.body.duration
+            duration: req.body.duration,
+            order: {
+                orderID: req.body.orderID,
+                amount: req.body.amount
+            }
         }
     }
     UserController.addTravel(params).then(result => res.send(result))

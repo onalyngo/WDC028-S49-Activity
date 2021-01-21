@@ -44,16 +44,16 @@ const userSchema = new mongoose.Schema({
                 type: Date,
                 default: moment()
             },
-            /* charge: {
-                chargeId: {
+            order: {
+                orderID: {
                     type: String,
-                    required: [true, 'Charge ID is required']
+                    required: [true, 'Order ID is required']
                 },
                 amount: {
                     type: Number,
-                    required: [true, 'Charge amount is required']
+                    required: [true, 'Order amount is required']
                 }
-            } */
+            }
         }
     ]
 })

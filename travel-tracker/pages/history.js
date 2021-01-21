@@ -29,6 +29,7 @@ export default function History() {
 		})
 		.then(res => res.json())
         .then(data => {
+        	console.log(data)
         	if (data._id){ // JWT validated
         		setRecords(data.travels)
         	} else { // JWT is invalid or non-existent
@@ -75,10 +76,12 @@ export default function History() {
 										<th>Date</th>
 										<th>Distance (m)</th>
 										<th>Duration (mins)</th>
+										<th>Amount</th>
 									</tr>
 								</thead>
 								<tbody>
 									{records.map(record => {
+										console.log(record);
 										return(
 											<tr key={record._id}>
 												<td onClick={() => setCoordinates(record.origin.longitude, record.origin.latitude)}>
@@ -90,6 +93,7 @@ export default function History() {
 												<td>{moment(record.date).format('MMMM DD YYYY')}</td>
 												<td>{Math.round(record.distance)}</td>
 												<td>{Math.round(record.duration/60)}</td>
+												<td>{record.order.amount}</td>
 											</tr>
 										)
 									})}

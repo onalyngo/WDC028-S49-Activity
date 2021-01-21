@@ -5,6 +5,7 @@ import mapboxgl from 'mapbox-gl';
 mapboxgl.accessToken = process.env.NEXT_PUBLIC_REACT_APP_MAPBOX_KEY;
 import MapboxDirections from '@mapbox/mapbox-gl-directions/dist/mapbox-gl-directions';
 import UserContext from '../UserContext';
+import PayPalButton from './PayPalButton';
 
 const StreetNavigation = () => {
 
@@ -17,6 +18,9 @@ const StreetNavigation = () => {
 	const [destinationLong, setDestinationLong] = useState(0);
 	const [destinationLat, setDestinationLat] = useState(0);
 	const [isActive, setIsActive] = useState(false);
+	// Will store the amount/price for the booking/order
+	const [amount, setAmount] = useState(0);
+	// const [orderID, setOrderId] = useState(0);
 
 	const mapContainerRef = useRef(null);
 	
@@ -53,9 +57,10 @@ const StreetNavigation = () => {
                 setDuration((e.route[0].duration));
                 setOriginLong(e.route[0].legs[0].steps[0].intersections[0].location[0]);
                 setOriginLat(e.route[0].legs[0].steps[0].intersections[0].location[1]);
-
                 setDestinationLong(e.route[0].legs[0].steps[e.route[0].legs[0].steps.length-1].intersections[0].location[0])
                 setDestinationLat(e.route[0].legs[0].steps[e.route[0].legs[0].steps.length-1].intersections[0].location[1])
+
+                setAmount(Math.round(e.route[0].distance/1000)*50)
 			}
 			
 		})
@@ -63,6 +68,7 @@ const StreetNavigation = () => {
 		return () => map.remove()
 
 	}, [])
+
 
 	useEffect(() => {
 		if(distance !== 0 && duration !== 0){
@@ -73,7 +79,7 @@ const StreetNavigation = () => {
 	}, [distance, duration])
 	
 
-	function recordTravel() {
+	function recordTravel(orderID) {
         // console.log(originLong, originLat, destinationLong, destinationLat, distance, duration);
 
         fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/users/travels`, {
@@ -88,7 +94,10 @@ const StreetNavigation = () => {
                 destinationLong: destinationLong,
                 destinationLat: destinationLat,
                 distance: distance,
-                duration: duration
+                duration: duration,
+                orderID: orderID,
+                amount: amount
+
             })
         })
             .then(res => res.json())
@@ -103,6 +112,16 @@ const StreetNavigation = () => {
             })
     }
 
+    function completeBooking(orderId){
+    	setOriginLong(0)
+    	setOriginLat(0)
+    	setDestinationLong(0)
+    	setDestinationLat(0)
+    	setDistance(0)
+    	setDuration(0)
+    	setAmount(0)
+    	recordTravel(orderId)
+    }
 
 	return(
 		<Row>
@@ -139,22 +158,19 @@ const StreetNavigation = () => {
 								<Card.Text>
 									Total Duration: {Math.round(duration/60)} minutes
 								</Card.Text>
+								<Card.Text>
+									Booking Cost: PHP {amount}
+								</Card.Text>
 								{ isActive === true
 									?
-										<Button
-											variant="success"
-											onClick={recordTravel}
-										>
-											Record
-										</Button>
+										<PayPalButton
+											amount={amount}
+											completeBooking={completeBooking}
+										/>
 									:
-										<Button
-											variant="secondary"
-											disabled
-										>
-											Record
-										</Button>
-
+										<Alert variant="info">
+											Generate a route to book a ride
+										</Alert>
 								}
 							</Card.Body>
 						</Card>
